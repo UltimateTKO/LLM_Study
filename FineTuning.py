@@ -85,35 +85,35 @@ try:
 		# tokenizer.pad_token = "<|eot_id|>"
 		tokenizer.pad_token_id = tokenizer.eos_token_id
 
-	device_map = {
-		"model.embed_tokens": 0,
-	}
-	for i in range(0, 32, 1):
-		layers_gpu_num = i % 4
-		device_map[f"model.layers.{i}"] = layers_gpu_num
-	device_map["model.norm"] = 1
-	device_map["model.rotary_emb"] = 2
-	device_map["lm_head"] = 3
+	# device_map = {
+	# 	"model.embed_tokens": 0,
+	# }
+	# for i in range(0, 32, 1):
+	# 	layers_gpu_num = i % 4
+	# 	device_map[f"model.layers.{i}"] = layers_gpu_num
+	# device_map["model.norm"] = 1
+	# device_map["model.rotary_emb"] = 2
+	# device_map["lm_head"] = 3
 
-	local_model_path = snapshot_download(MODEL_NAME)
-	with init_empty_weights():
-		model = AutoModelForCausalLM.from_pretrained(
-			MODEL_NAME,
-			torch_dtype=torch.bfloat16,
-			low_cpu_mem_usage=True,
-			device_map=device_map,
-		)
+	# local_model_path = snapshot_download(MODEL_NAME)
+	# with init_empty_weights():
+	# 	model = AutoModelForCausalLM.from_pretrained(
+	# 		MODEL_NAME,
+	# 		torch_dtype=torch.bfloat16,
+	# 		low_cpu_mem_usage=True,
+	# 		device_map=device_map,
+	# 	)
 
-	model = load_checkpoint_and_dispatch(
-		model,
-		local_model_path,
-	)
-	# model = AutoModelForCausalLM.from_pretrained(
-	# 	MODEL_NAME,
-	# 	torch_dtype=torch.bfloat16,
-	# 	low_cpu_mem_usage=True,
-	# 	device_map=device_map,
+	# model = load_checkpoint_and_dispatch(
+	# 	model,
+	# 	local_model_path,
 	# )
+	model = AutoModelForCausalLM.from_pretrained(
+		MODEL_NAME,
+		torch_dtype=torch.bfloat16,
+		low_cpu_mem_usage=True,
+		device_map="auto",
+	)
 	# model = prepare_model_for_kbit_training(model)
 
 	# LoRA設定
